@@ -1,0 +1,56 @@
+name: mood_note_client
+
+description: "毕业设计"
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+
+# --- 启动屏配置 ---
+flutter_native_splash:
+  #背景颜色 (推荐白色，符合心晴记的简约风)
+  color: "#FFFFFF"
+  #中间的 Logo 图片路径
+  image: assets/images/启动页logo.png
+  #针对 Android 12+ (API 31以上) 的特殊适配
+  # 你的 Pixel 8 模拟器是 API 35，这一步至关重要！
+  android_12:
+    image: assets/images/启动页logo.png
+    color: "#FFFFFF"
+    branding: assets/images/启动页branding.png
+  #是否全屏显示 (隐藏状态栏)
+  fullscreen: true
+
+# --- 应用图标配置 ---
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  #指定你的图标路径
+  image_path: "assets/images/logo.png"
+  #移除 alpha 通道（防止 iOS 审核因为透明度报错，这里设为 false 即可）
+  remove_alpha_ios: true
+  # --- Android 适配核心配置 ---
+  # 背景颜色：白色
+  adaptive_icon_background: "#FFFFFF"
+  # 前景图片：使用同一张带白边的图
+  adaptive_icon_foreground: "assets/images/logo.png"
