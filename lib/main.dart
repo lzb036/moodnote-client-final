@@ -6,6 +6,12 @@ import 'pages/diary.dart';
 import 'pages/community.dart';
 import 'pages/chart.dart';
 import 'pages/mine.dart';
+//引入检查登录状态界面
+import 'pages/auth_check.dart';
+//引入welcome界面
+import 'pages/welcome.dart';
+//引入登录界面
+import 'pages/login.dart';
 
 void main() {
   // 确保Flutter绑定初始化
@@ -46,7 +52,11 @@ class MoodNoteApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MainPage(),
+      home: const AuthCheckPage(),//一进入应用时的界面
+      routes: {
+        '/welcome': (context) => const WelcomePage(),
+        '/login': (context) => const LoginPage(),
+      },
     );
   }
 }

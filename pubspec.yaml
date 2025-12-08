@@ -25,6 +25,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - assets/images/
 
 # --- 启动屏配置 ---
 flutter_native_splash:
