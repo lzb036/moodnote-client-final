@@ -16,7 +16,7 @@ class _AuthCheckPageState extends State<AuthCheckPage> {
   // true  -> 直接进主页 (MainPage)
   // false -> 进欢迎页 (WelcomePage)
   // ============================================
-  final bool isUserLoggedIn = false;
+  final bool isUserLoggedIn = true;
 
   @override
   void initState() {

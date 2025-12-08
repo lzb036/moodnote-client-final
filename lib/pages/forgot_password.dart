@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // 1. 引入 services 库
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -82,6 +83,12 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    // 2. 设置状态栏图标为深色，背景透明
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ));
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -97,138 +104,144 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
-          child: Column(
-            children: [
-              // --- 1. 顶部挠头动画 (居中) ---
-              SizedBox(
-                height: 220,
-                child: Image.asset(
-                  _currentImageIndex == 0
-                      ? 'assets/images/忘记密码1.png' // 记得改名！
-                      : 'assets/images/忘记密码2.png',
-                  fit: BoxFit.contain,
-                  gaplessPlayback: true,
-                ),
-              ),
-
-              const SizedBox(height: 10),
-              const Text(
-                "别担心，我们帮你找回来。",
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              const SizedBox(height: 30),
-
-              // --- 2. 邮箱输入框 ---
-              _buildTextField(
-                controller: _emailController,
-                label: '注册邮箱',
-                icon: Icons.email_outlined,
-              ),
-              const SizedBox(height: 20),
-
-              // --- 3. 验证码输入框 (带发送按钮) ---
-              TextField(
-                controller: _codeController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: '验证码',
-                  prefixIcon: const Icon(Icons.security, color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFFF5F5F5),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide.none,
+      // 3. 点击空白收起键盘 (包裹在 body 最外层)
+      body: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
+            child: Column(
+              children: [
+                // --- 1. 顶部挠头动画 (居中) ---
+                SizedBox(
+                  height: 220,
+                  child: Image.asset(
+                    _currentImageIndex == 0
+                        ? 'assets/images/忘记密码1.png' // 记得改名！
+                        : 'assets/images/忘记密码2.png',
+                    fit: BoxFit.contain,
+                    gaplessPlayback: true,
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                  // 后缀按钮：发送验证码
-                  suffixIcon: Container(
-                    margin: const EdgeInsets.all(8),
-                    width: 80, // 给个固定宽度，防止倒计时数字变化导致按钮忽大忽小
-                    child: ElevatedButton(
-                      // 逻辑：如果倒计时 > 0，onPressed 设为 null (按钮会自动变灰且不可点)
-                      // 否则，绑定点击事件
-                      onPressed: _countdownTime > 0
-                          ? null
-                          : () {
-                        // 点击后执行倒计时逻辑
-                        _startCodeCountdown();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        // 背景色逻辑：倒计时中用灰色，否则用黑色
-                        // 注意：当 onPressed 为 null 时，Flutter 默认就是灰色，所以这里主要设置正常状态
-                        backgroundColor: const Color(0xFF1A2226),
-                        disabledBackgroundColor: Colors.grey[300], // 禁用时的背景色
-                        disabledForegroundColor: Colors.grey[600], // 禁用时的文字色
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                ),
+
+                const SizedBox(height: 10),
+                const Text(
+                  "别担心，我们帮你找回来。",
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+                const SizedBox(height: 30),
+
+                // --- 2. 邮箱输入框 ---
+                _buildTextField(
+                  controller: _emailController,
+                  label: '注册邮箱',
+                  icon: Icons.email_outlined,
+                ),
+                const SizedBox(height: 20),
+
+                // --- 3. 验证码输入框 (带发送按钮) ---
+                TextField(
+                  controller: _codeController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: '验证码',
+                    prefixIcon: const Icon(Icons.security, color: Colors.grey),
+                    filled: true,
+                    fillColor: const Color(0xFFF5F5F5),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    // 后缀按钮：发送验证码
+                    suffixIcon: Container(
+                      margin: const EdgeInsets.all(8),
+                      width: 80, // 给个固定宽度，防止倒计时数字变化导致按钮忽大忽小
+                      child: ElevatedButton(
+                        // 逻辑：如果倒计时 > 0，onPressed 设为 null (按钮会自动变灰且不可点)
+                        // 否则，绑定点击事件
+                        onPressed: _countdownTime > 0
+                            ? null
+                            : () {
+                          // 点击后执行倒计时逻辑
+                          _startCodeCountdown();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          // 背景色逻辑：倒计时中用灰色，否则用黑色
+                          // 注意：当 onPressed 为 null 时，Flutter 默认就是灰色，所以这里主要设置正常状态
+                          backgroundColor: const Color(0xFF1A2226),
+                          disabledBackgroundColor: Colors.grey[300], // 禁用时的背景色
+                          disabledForegroundColor: Colors.grey[600], // 禁用时的文字色
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: EdgeInsets.zero, //以此确保文字居中
                         ),
-                        padding: EdgeInsets.zero, //以此确保文字居中
-                      ),
-                      // 文字逻辑：倒计时中显示 "59s"，否则显示 "发送"
-                      child: Text(
-                        _countdownTime > 0 ? '${_countdownTime}s' : '发送',
-                        style: TextStyle(
-                          fontSize: 13,
-                          // 正常状态白色，禁用状态会自动使用 disabledForegroundColor
-                          color: _countdownTime > 0 ? null : Colors.white,
+                        // 文字逻辑：倒计时中显示 "59s"，否则显示 "发送"
+                        child: Text(
+                          _countdownTime > 0 ? '${_countdownTime}s' : '发送',
+                          style: TextStyle(
+                            fontSize: 13,
+                            // 正常状态白色，禁用状态会自动使用 disabledForegroundColor
+                            color: _countdownTime > 0 ? null : Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-              // --- 4. 新密码 ---
-              _buildPasswordField(
-                controller: _newPwdController,
-                label: '新密码',
-                isVisible: _isNewPwdVisible,
-                onToggle: () => setState(() => _isNewPwdVisible = !_isNewPwdVisible),
-              ),
-              const SizedBox(height: 20),
+                // --- 4. 新密码 ---
+                _buildPasswordField(
+                  controller: _newPwdController,
+                  label: '新密码',
+                  isVisible: _isNewPwdVisible,
+                  onToggle: () => setState(() => _isNewPwdVisible = !_isNewPwdVisible),
+                ),
+                const SizedBox(height: 20),
 
-              // --- 5. 确认新密码 ---
-              _buildPasswordField(
-                controller: _confirmPwdController,
-                label: '确认新密码',
-                isVisible: _isConfirmPwdVisible,
-                onToggle: () => setState(() => _isConfirmPwdVisible = !_isConfirmPwdVisible),
-              ),
+                // --- 5. 确认新密码 ---
+                _buildPasswordField(
+                  controller: _confirmPwdController,
+                  label: '确认新密码',
+                  isVisible: _isConfirmPwdVisible,
+                  onToggle: () => setState(() => _isConfirmPwdVisible = !_isConfirmPwdVisible),
+                ),
 
-              const SizedBox(height: 40),
+                const SizedBox(height: 40),
 
-              // --- 6. 确认修改按钮 ---
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // TODO: 提交修改逻辑
-                    print("点击了确认修改");
-                    // 模拟成功后返回登录页
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1A2226),
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                // --- 6. 确认修改按钮 ---
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // TODO: 提交修改逻辑
+                      // 模拟成功后返回登录页
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1A2226),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: const Text(
+                      '重 置 密 码',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  child: const Text(
-                    '重 置 密 码',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
                 ),
-              ),
 
-              const SizedBox(height: 30), // 底部留白
-            ],
+                const SizedBox(height: 30), // 底部留白
+              ],
+            ),
           ),
         ),
       ),

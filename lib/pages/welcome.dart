@@ -114,7 +114,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: 跳转到登录逻辑
+                    //跳转到登录逻辑
                     Navigator.pushNamed(context, '/login');
                   },
                   style: ElevatedButton.styleFrom(
@@ -140,8 +140,8 @@ class _WelcomePageState extends State<WelcomePage> {
                 height: 50,
                 child: OutlinedButton(
                   onPressed: () {
-                    // TODO: 跳转到注册逻辑
-                    print("点击了注册");
+                    // 跳转到注册逻辑
+                    Navigator.pushNamed(context, '/register');
                   },
                   style: OutlinedButton.styleFrom(
                     backgroundColor: Colors.white,

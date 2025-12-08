@@ -6,12 +6,15 @@ import 'pages/diary.dart';
 import 'pages/community.dart';
 import 'pages/chart.dart';
 import 'pages/mine.dart';
-//引入检查登录状态界面
+
+//引入其他界面
 import 'pages/auth_check.dart';
-//引入welcome界面
 import 'pages/welcome.dart';
-//引入登录界面
 import 'pages/login.dart';
+import 'pages/register.dart';
+
+//引入组件
+import 'widgets/side_drawer.dart';
 
 void main() {
   // 确保Flutter绑定初始化
@@ -52,10 +55,11 @@ class MoodNoteApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const AuthCheckPage(),//一进入应用时的界面
+      home: const AuthCheckPage(), //一进入应用时的界面
       routes: {
         '/welcome': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),
+        '/register': (context) => const RegisterPage(),
       },
     );
   }
@@ -88,16 +92,11 @@ class _MainPageState extends State<MainPage> {
   }
 
   // 一个辅助函数：用来构建图标，减少重复代码
-  // assetName: 图片文件名
-  // isSelected: 是否被选中
   Widget _buildIcon(String assetName, bool isSelected) {
     return Image.asset(
       'assets/icons/$assetName', // 拼接路径
       width: 24,
       height: 24,
-      // 如果你的图标是纯黑色的PNG，可以用color属性来染色
-      // 选中时主要颜色(黑色)，未选中时灰色
-      // 如果你的图标本身是彩色的，请把下面这行 color 代码删掉！
       color: isSelected ? const Color(0xFF2D2D2D) : const Color(0xFFBDBDBD),
     );
   }
@@ -105,8 +104,11 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // 中间内容区域
-      body: _pages[_currentIndex],
+      drawer: const SideDrawer(),
+      body: IndexedStack(
+        index: _currentIndex, // 控制显示哪一张“牌”
+        children: _pages,     // 将四个页面一次性叠在这里
+      ),
 
       // 底部导航栏
       bottomNavigationBar: Container(
