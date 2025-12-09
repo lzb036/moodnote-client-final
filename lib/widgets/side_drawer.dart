@@ -87,7 +87,7 @@ class SideDrawer extends StatelessWidget {
                   Text(
                     "$dateStr   $greeting",
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       color: Colors.grey,
                       letterSpacing: 1.0,
                     ),

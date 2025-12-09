@@ -15,6 +15,8 @@ import 'pages/register.dart';
 
 //引入组件
 import 'widgets/side_drawer.dart';
+//引入国际化包
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   // 确保Flutter绑定初始化
@@ -55,6 +57,20 @@ class MoodNoteApp extends StatelessWidget {
           ),
         ),
       ),
+      // 设置支持的语言：中文
+      supportedLocales: const [
+        Locale('zh', 'CN'), // 中文 (简体)
+      ],
+
+      // 设置本地化代理（翻译器）
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate, // Material 组件库的翻译 (DatePicker 就在这里)
+        GlobalWidgetsLocalizations.delegate,  // 基础 Widget 的翻译
+        GlobalCupertinoLocalizations.delegate, // iOS 风格组件的翻译
+      ],
+
+      // 强制 APP 始终使用中文，不管手机系统语言是什么
+      locale: const Locale('zh', 'CN'),
       home: const AuthCheckPage(), //一进入应用时的界面
       routes: {
         '/welcome': (context) => const WelcomePage(),

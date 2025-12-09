@@ -12,7 +12,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.19.0
+  flutter_localizations:
+    sdk: flutter
+  intl: 0.20.2
   cupertino_icons: ^1.0.8
   flutter_native_splash: ^2.4.0
   flutter_launcher_icons: ^0.13.1
@@ -28,21 +30,23 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/images/weather/
+    - assets/images/mood/
+    - assets/images/event/
 
 # --- 启动屏配置 ---
 flutter_native_splash:
   #背景颜色 (推荐白色，符合心晴记的简约风)
   color: "#FFFFFF"
   #中间的 Logo 图片路径
-  image: assets/images/启动页logo.png
+  image: assets/images/start-logo.png
   #针对 Android 12+ (API 31以上) 的特殊适配
   # 你的 Pixel 8 模拟器是 API 35，这一步至关重要！
   android_12:
-    image: assets/images/启动页logo.png
+    image: assets/images/start-logo.png
     color: "#FFFFFF"
-    branding: assets/images/启动页branding.png
+    branding: assets/images/start-branding.png
   #是否全屏显示 (隐藏状态栏)
-  fullscreen: true
+  fullscreen: false
 
 # --- 应用图标配置 ---
 flutter_launcher_icons:

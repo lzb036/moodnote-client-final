@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'mood.dart';
 
 // 1. 定义天气数据模型
 class WeatherItem {
@@ -333,8 +334,11 @@ class _WeatherPageState extends State<WeatherPage> {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  print("选择了: ${currentItem.name}");
-                  // TODO: 跳转
+                  // 跳转到情绪选择界面
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MoodSelectPage()),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF1A2226),
