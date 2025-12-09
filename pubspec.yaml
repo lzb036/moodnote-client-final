@@ -27,6 +27,7 @@ flutter:
   assets:
     - assets/icons/
     - assets/images/
+    - assets/images/weather/
 
 # --- 启动屏配置 ---
 flutter_native_splash:
