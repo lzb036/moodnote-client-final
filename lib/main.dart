@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // 用于设置状态栏颜色
 
+
 //引入主要的四个界面
 import 'pages/diary.dart';
 import 'pages/community.dart';
@@ -17,6 +18,9 @@ import 'pages/register.dart';
 import 'widgets/side_drawer.dart';
 //引入国际化包
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+// ▼▼▼ 1. 引入 flutter_quill 包 (必须) ▼▼▼
+import 'package:flutter_quill/flutter_quill.dart';
 
 void main() {
   // 确保Flutter绑定初始化
@@ -40,6 +44,8 @@ class MoodNoteApp extends StatelessWidget {
       title: '心晴记',
       debugShowCheckedModeBanner: false, // 去掉右上角Debug标签
       theme: ThemeData(
+        //设置全局字体
+        fontFamily: '手写体',
         // 设置主色调
         primarySwatch: Colors.teal,
         useMaterial3: true,
@@ -67,6 +73,7 @@ class MoodNoteApp extends StatelessWidget {
         GlobalMaterialLocalizations.delegate, // Material 组件库的翻译 (DatePicker 就在这里)
         GlobalWidgetsLocalizations.delegate,  // 基础 Widget 的翻译
         GlobalCupertinoLocalizations.delegate, // iOS 风格组件的翻译
+        FlutterQuillLocalizations.delegate,// ▼▼▼ 3. 添加 Quill 本地化代理 (解决崩溃的关键) ▼▼▼
       ],
 
       // 强制 APP 始终使用中文，不管手机系统语言是什么

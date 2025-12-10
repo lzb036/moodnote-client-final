@@ -18,6 +18,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_native_splash: ^2.4.0
   flutter_launcher_icons: ^0.13.1
+  flutter_quill: ^11.5.0
 
 dev_dependencies:
   flutter_test:
@@ -26,6 +27,19 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: 宋体
+      fonts:
+        - asset: assets/fonts/宋体.ttf
+
+    - family: 楷体
+      fonts:
+        - asset: assets/fonts/楷体.ttf
+
+    - family: 手写体
+      fonts:
+        - asset: assets/fonts/手写体.ttf
+
   assets:
     - assets/icons/
     - assets/images/
