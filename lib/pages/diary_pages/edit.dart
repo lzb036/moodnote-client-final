@@ -55,7 +55,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     super.dispose();
   }
 
-  // --- 核心逻辑：监听键盘高度变化 ---
+  // 监听键盘高度变化
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
@@ -206,9 +206,9 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: _buildAppBar(),
-        resizeToAvoidBottomInset: true, // 关键：允许Body随底部高度调整
+        resizeToAvoidBottomInset: true, // 允许Body随底部高度调整
 
-        // --- 核心修改：移除 Stack，Body 只是一个 ScrollView ---
+        // 移除 Stack，Body 只是一个 ScrollView
         body: CustomScrollView(
           controller: _pageScrollController,
           physics: const AlwaysScrollableScrollPhysics(),
@@ -261,7 +261,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
           ],
         ),
 
-        // --- 核心修改：所有底部交互移入 BottomNavigationBar ---
+        // 所有底部交互移入 BottomNavigationBar
         bottomNavigationBar: _buildBottomBar(),
       ),
     );
@@ -331,13 +331,13 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     );
   }
 
-  // --- 核心修改：重构底部栏 ---
+  // 重构底部栏
   Widget _buildBottomBar() {
     // 获取当前系统的键盘高度
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
     return Container(
-      // 关键：给底部添加 padding，其高度等于键盘高度。
+      // 给底部添加 padding，其高度等于键盘高度。
       // 这样当系统键盘弹起时，我们的工具栏图标会被顶在键盘上方。
       // 当自定义面板开启时，keyboardHeight 为 0，padding 为 0。
       padding: EdgeInsets.only(bottom: keyboardHeight),
@@ -353,7 +353,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
       child: Column(
         mainAxisSize: MainAxisSize.min, // 包裹内容高度
         children: [
-          // 1. 字数统计与工具栏图标 (始终显示)
+          // 字数统计与工具栏图标 (始终显示)
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -385,7 +385,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
             ],
           ),
 
-          // 2. 扩展功能面板 (动画显示)
+          // 扩展功能面板 (动画显示)
           // 当 _selectedToolIndex 有值时，高度设为 200，Scaffold 会感知到这个高度变化
           // 并自动将 Body 向上推 200，实现“顶起”效果。
           AnimatedContainer(

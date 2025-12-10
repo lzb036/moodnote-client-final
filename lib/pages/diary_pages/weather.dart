@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'mood.dart';
 
-// 1. 定义天气数据模型
+// 定义天气数据模型
 class WeatherItem {
   final String name;
   final String description;
@@ -32,7 +32,7 @@ class _WeatherPageState extends State<WeatherPage> {
   // 当前滑动到了第几页（用于控制底部小圆点）
   int _currentPage = 0;
 
-  // --- 2. 配置 13 种天气数据 ---
+  // 配置 13 种天气数据
   final List<WeatherItem> _weatherItems = [
     WeatherItem(
       name: "晴天",
@@ -145,7 +145,7 @@ class _WeatherPageState extends State<WeatherPage> {
       ),
       body: Column(
         children: [
-          // --- 1. 顶部展示区域 ---
+          // 顶部展示区域
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             height: 200,
@@ -155,21 +155,21 @@ class _WeatherPageState extends State<WeatherPage> {
                 Expanded(
                   flex: 4,
                   child: AnimatedSwitcher(
-                    // 1. 动画持续时间，500毫秒比较柔和
+                    // 动画持续时间，500毫秒比较柔和
                     duration: const Duration(milliseconds: 500),
-                    // 2. 动画曲线，使用 easeInOut 让过渡更自然
+                    // 动画曲线，使用 easeInOut 让过渡更自然
                     switchInCurve: Curves.easeInOut,
                     switchOutCurve: Curves.easeInOut,
-                    // 3. 自定义过渡效果（默认是渐变 Fade，这里我们显式写出来，也可以加上缩放）
+                    // 自定义过渡效果（默认是渐变 Fade，这里我们显式写出来，也可以加上缩放）
                     transitionBuilder: (Widget child, Animation<double> animation) {
                       return FadeTransition(
                         opacity: animation,
                         child: child,
                       );
                     },
-                    // 4. 图片组件
+                    // 图片组件
                     child: Image.asset(
-                      // 关键点！必须设置 key，否则 AnimatedSwitcher 认为组件没变，不会做动画
+                      // 必须设置 key，否则 AnimatedSwitcher 认为组件没变，不会做动画
                       key: ValueKey(currentItem.illustrationPath),
 
                       currentItem.illustrationPath,
@@ -219,7 +219,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
           const SizedBox(height: 10),
 
-          // --- 2. 中间分页区域 (PageView) ---
+          // 中间分页区域 (PageView)
           Expanded(
             child: PageView.builder(
               itemCount: pageCount,
@@ -244,8 +244,8 @@ class _WeatherPageState extends State<WeatherPage> {
                   padding: const EdgeInsets.only(
                       left: 10,
                       right: 10,
-                      top: 35, // <--- 这里增加了顶部内边距，图标会整体下移
-                      bottom: 10 // 可选：如果底部也觉得紧，可以加一点
+                      top: 35, // 这里增加了顶部内边距，图标会整体下移
+                      bottom: 10 // 如果底部也觉得紧，可以加一点
                   ),
                   itemCount: pageItems.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -273,7 +273,7 @@ class _WeatherPageState extends State<WeatherPage> {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: isSelected ? Colors.white : Colors.transparent,
-                          // 关键点：不使用 border，而是使用两层阴影模拟光晕
+                          // 不使用 border，而是使用两层阴影模拟光晕
                           boxShadow: isSelected
                               ? [
                             // 第一层：内部的微光
@@ -305,7 +305,7 @@ class _WeatherPageState extends State<WeatherPage> {
             ),
           ),
 
-          // --- 3. 分页指示器 (小圆点) ---
+          // 分页指示器 (小圆点)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(pageCount, (index) {
@@ -326,7 +326,7 @@ class _WeatherPageState extends State<WeatherPage> {
 
           const SizedBox(height: 50),
 
-          // --- 4. 底部按钮 ---
+          // 底部按钮
           Padding(
             padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40, top: 20),
             child: SizedBox(

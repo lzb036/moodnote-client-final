@@ -10,17 +10,17 @@ class ForgotPasswordPage extends StatefulWidget {
 }
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
-  // --- 1. 动画变量 ---
+  // 动画变量
   int _currentImageIndex = 0;
   Timer? _timer;
 
-  // --- 2. 表单控制器 ---
+  // 表单控制器
   final _emailController = TextEditingController();
   final _codeController = TextEditingController();
   final _newPwdController = TextEditingController();
   final _confirmPwdController = TextEditingController();
 
-  // --- 3. 密码可见性开关 ---
+  // 密码可见性开关
   bool _isNewPwdVisible = false;
   bool _isConfirmPwdVisible = false;
 
@@ -83,7 +83,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 2. 设置状态栏图标为深色，背景透明
+    // 设置状态栏图标为深色，背景透明
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
@@ -104,7 +104,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         ),
         centerTitle: true,
       ),
-      // 3. 点击空白收起键盘 (包裹在 body 最外层)
+      // 点击空白收起键盘 (包裹在 body 最外层)
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
@@ -115,7 +115,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
             child: Column(
               children: [
-                // --- 1. 顶部挠头动画 (居中) ---
+                // 顶部挠头动画 (居中)
                 SizedBox(
                   height: 220,
                   child: Image.asset(
@@ -134,7 +134,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 const SizedBox(height: 30),
 
-                // --- 2. 邮箱输入框 ---
+                // 邮箱输入框
                 _buildTextField(
                   controller: _emailController,
                   label: '注册邮箱',
@@ -142,7 +142,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 const SizedBox(height: 20),
 
-                // --- 3. 验证码输入框 (带发送按钮) ---
+                // 验证码输入框 (带发送按钮)
                 TextField(
                   controller: _codeController,
                   keyboardType: TextInputType.number,
@@ -195,7 +195,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 const SizedBox(height: 20),
 
-                // --- 4. 新密码 ---
+                // 新密码
                 _buildPasswordField(
                   controller: _newPwdController,
                   label: '新密码',
@@ -204,7 +204,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ),
                 const SizedBox(height: 20),
 
-                // --- 5. 确认新密码 ---
+                // 确认新密码
                 _buildPasswordField(
                   controller: _confirmPwdController,
                   label: '确认新密码',
@@ -214,7 +214,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                 const SizedBox(height: 40),
 
-                // --- 6. 确认修改按钮 ---
+                // 确认修改按钮
                 SizedBox(
                   width: double.infinity,
                   height: 55,

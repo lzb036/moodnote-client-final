@@ -38,7 +38,7 @@ class SideDrawer extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- 1. 顶部头部区域 ---
+            // 顶部头部区域
             Padding(
               padding: const EdgeInsets.only(top: 40, left: 30, right: 20, bottom: 10),
               child: Column(
@@ -57,7 +57,7 @@ class SideDrawer extends StatelessWidget {
                           color: Color(0xFF1A2226),
                         ),
                       ),
-                      // --- 增强搜索按钮点击动效 ---
+                      // 增强搜索按钮点击动效
                       Material(
                         color: Colors.transparent, // 保持背景透明
                         shape: const CircleBorder(), // 确保水波纹是圆形的
@@ -96,10 +96,10 @@ class SideDrawer extends StatelessWidget {
               ),
             ),
 
-            // --- 2. 空白间隔 ---
+            // 空白间隔
             const SizedBox(height: 60),
 
-            // --- 3. 功能列表区域 ---
+            // 功能列表区域
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 10), // 给列表两边加点空隙，让点击效果不贴边
@@ -149,7 +149,7 @@ class SideDrawer extends StatelessWidget {
     );
   }
 
-  // --- 使用 InkWell 实现圆角点击效果 ---
+  // 使用 InkWell 实现圆角点击效果
   Widget _buildMenuItem(BuildContext context, {
     required IconData icon,
     required String title,

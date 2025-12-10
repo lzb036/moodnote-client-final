@@ -19,7 +19,6 @@ import 'widgets/side_drawer.dart';
 //引入国际化包
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-// ▼▼▼ 1. 引入 flutter_quill 包 (必须) ▼▼▼
 import 'package:flutter_quill/flutter_quill.dart';
 
 void main() {
@@ -70,10 +69,10 @@ class MoodNoteApp extends StatelessWidget {
 
       // 设置本地化代理（翻译器）
       localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate, // Material 组件库的翻译 (DatePicker 就在这里)
+        GlobalMaterialLocalizations.delegate, // Material 组件库的翻译
         GlobalWidgetsLocalizations.delegate,  // 基础 Widget 的翻译
         GlobalCupertinoLocalizations.delegate, // iOS 风格组件的翻译
-        FlutterQuillLocalizations.delegate,// ▼▼▼ 3. 添加 Quill 本地化代理 (解决崩溃的关键) ▼▼▼
+        FlutterQuillLocalizations.delegate,// 添加 Quill 本地化代理
       ],
 
       // 强制 APP 始终使用中文，不管手机系统语言是什么

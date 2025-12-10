@@ -2,7 +2,7 @@ import 'dart:async'; // 引入 Timer 用于轮播
 import 'package:flutter/material.dart';
 import 'event.dart';
 
-// 1. 定义心情数据模型
+// 定义心情数据模型
 class MoodItem {
   final String name;             // 心情名称 (如：钦佩)
   final String illustrationPath; // 对应的插画路径
@@ -21,7 +21,7 @@ class MoodSelectPage extends StatefulWidget {
 }
 
 class _MoodSelectPageState extends State<MoodSelectPage> {
-  // --- 状态管理 ---
+  // 状态管理
   // 使用 Set 存储选中的索引，支持多选，自动去重
   // 默认选中第0个 (钦佩)
   final Set<int> _selectedIndices = {0};
@@ -33,7 +33,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
   Timer? _carouselTimer;
   int _currentDisplayIndex = 0; // 当前展示的是“选中列表”中的第几个
 
-  // --- 2. 配置 27 种心情数据 ---
+  // 配置 27 种心情数据
   final List<MoodItem> _moodItems = [
     // 第 1 页
     MoodItem(name: "钦佩", illustrationPath: "assets/images/mood/钦佩赞赏.png"),
@@ -81,7 +81,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
     super.dispose();
   }
 
-  // --- 逻辑控制 ---
+  // 逻辑控制
 
   // 检查是否需要开启或关闭轮播
   void _checkCarousel() {
@@ -127,12 +127,12 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
     }
   }
 
-  // ▼▼▼ 核心修改区域：点击某个心情 ▼▼▼
+  // 核心修改区域：点击某个心情
   void _onItemTapped(int index) {
     setState(() {
       if (_selectedIndices.contains(index)) {
         // 如果已经选中，准备取消
-        // 【修改点】：只有当选中数量大于 1 时，才允许取消
+        // 只有当选中数量大于 1 时，才允许取消
         // 这样就保证了至少有一个被选中
         if (_selectedIndices.length > 1) {
           _selectedIndices.remove(index);
@@ -148,7 +148,6 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
       _checkCarousel();
     });
   }
-  // ▲▲▲ 修改结束 ▲▲▲
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +166,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
       ),
       body: Column(
         children: [
-          // --- 1. 顶部展示区域 ---
+          // 顶部展示区域
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             height: 270,
@@ -219,7 +218,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
             ),
           ),
 
-          // --- 2. 中间分页选择区域 ---
+          // 中间分页选择区域
           Expanded(
             child: PageView.builder(
               itemCount: pageCount,
@@ -284,7 +283,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
             ),
           ),
 
-          // --- 3. 分页指示器 ---
+          // 分页指示器
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(pageCount, (index) {
@@ -304,7 +303,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
 
           const SizedBox(height: 40),
 
-          // --- 4. 底部按钮 ---
+          // 底部按钮
           Padding(
             padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40, top: 10),
             child: SizedBox(

@@ -44,7 +44,7 @@ class _WelcomePageState extends State<WelcomePage> {
             children: [
               const Spacer(flex: 2), // 顶部的弹性空白
 
-              // --- 1. 动态插画区域 ---
+              // 动态插画区域
               SizedBox(
                 height: 200, // 给定固定高度，防止图片切换时页面抖动
                 child: Image.asset(
@@ -59,7 +59,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
               const SizedBox(height: 40),
 
-              // --- 2. 文字区域 ---
+              // 文字区域
               // "Hi" - 使用衬线体，斜体
               const Text(
                 'Hi',
@@ -106,7 +106,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
               const Spacer(flex: 2), // 中间的弹性空白
 
-              // --- 3. 按钮区域 ---
+              // 按钮区域
 
               // 黑色实心按钮：登录
               SizedBox(

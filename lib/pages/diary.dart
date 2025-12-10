@@ -13,7 +13,7 @@ class DiaryPage extends StatefulWidget {
 
 class _DiaryPageState extends State<DiaryPage> {
 
-  // --- 1. 随机欢迎语数据 ---
+  // 随机欢迎语数据
   final List<String> _welcomeMessages = [
     "初次见面，你好鸭\n那么现在，让我们写下第一篇日记吧",
     "今天发生了什么有趣的事吗？\n别让生活的小确幸溜走，快记下来吧",
@@ -56,14 +56,14 @@ class _DiaryPageState extends State<DiaryPage> {
         body: SafeArea(
           child: Column(
             children: [
-              // --- 顶部导航栏 (包含菜单和写日记按钮) ---
+              // 顶部导航栏 (包含菜单和写日记按钮)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
                 child: Row(
-                  // 【修改点 3】设置对齐方式，让两个按钮分别靠左和靠右
+                  // 设置对齐方式，让两个按钮分别靠左和靠右
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // --- 左侧：菜单按钮 ---
+                    // 左侧：菜单按钮
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -84,7 +84,7 @@ class _DiaryPageState extends State<DiaryPage> {
                       ),
                     ),
 
-                    // ---右侧：写日记按钮---
+                    // 右侧：写日记按钮
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.white,

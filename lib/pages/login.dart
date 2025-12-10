@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // 1. 引入 services 库以设置状态栏
+import 'package:flutter/services.dart'; // 引入 services 库以设置状态栏
 import '../main.dart'; // 用于跳转回主页
 import 'forgot_password.dart';
 
@@ -12,11 +12,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // 1. 动画相关变量
+  // 动画相关变量
   int _currentImageIndex = 0;
   Timer? _timer;
 
-  // 2. 表单相关变量
+  // 表单相关变量
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false; // 控制密码是否显示明文
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 2. 设置状态栏图标为深色，背景透明
+    // 设置状态栏图标为深色，背景透明
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
@@ -50,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      // 3. 点击空白收起键盘
+      // 点击空白收起键盘
       body: GestureDetector(
         behavior: HitTestBehavior.translucent,
         onTap: () {
@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- 1. 顶部返回按钮 ---
+                  // 顶部返回按钮
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios, color: Colors.black54),
                     onPressed: () => Navigator.pop(context),
@@ -75,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 20),
 
-                  // --- 2. 左上角动态插画 ---
+                  // 左上角动态插画
                   Transform.translate(
                     offset: const Offset(-20, 0),
                     child: SizedBox(
@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 20),
 
-                  // --- 3. 大标题 ---
+                  // 大标题
                   const Text(
                     '欢迎回来，',
                     style: TextStyle(
@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 40),
 
-                  // --- 4. 用户名输入框 ---
+                  // 用户名输入框
                   TextField(
                     controller: _usernameController,
                     decoration: InputDecoration(
@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 20),
 
-                  // --- 5. 密码输入框 ---
+                  // 密码输入框
                   TextField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 30),
 
-                  // --- 6. 登录按钮 ---
+                  // 登录按钮
                   SizedBox(
                     width: double.infinity,
                     height: 55,

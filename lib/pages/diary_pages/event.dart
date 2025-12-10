@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'edit.dart';
 
-// 1. 定义事件数据模型
+// 定义事件数据模型
 class EventItem {
   final String name;      // 事件名称
   final String iconPath;  // 图标路径
@@ -20,18 +20,17 @@ class EventSelectPage extends StatefulWidget {
 }
 
 class _EventSelectPageState extends State<EventSelectPage> {
-  // --- 状态管理 ---
-  // 默认选中第0个 (冥想)
+  // 状态管理
+  // 默认选中第0个
   final Set<int> _selectedIndices = {0};
 
   // 当前页码
   int _currentPage = 0;
 
-  // 固定右上角的插画路径 (请准备这张图)
+  // 固定右上角的插画路径
   final String _fixedIllustration = "assets/images/event/事件选择.png";
 
-  // --- 2. 配置 36 种事件数据 ---
-  // 假设图片都在 assets/images/event/ 下，且名为 "中文名.png"
+  // 配置 36 种事件数据
   final List<EventItem> _eventItems = [
     // 第 1 页
     EventItem(name: "冥想", iconPath: "assets/images/event/冥想.png"),
@@ -121,7 +120,7 @@ class _EventSelectPageState extends State<EventSelectPage> {
       ),
       body: Column(
         children: [
-          // --- 1. 顶部展示区域 (左文案 + 右插画) ---
+          // 顶部展示区域 (左文案 + 右插画)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
             height: 160,
@@ -171,7 +170,7 @@ class _EventSelectPageState extends State<EventSelectPage> {
             ),
           ),
 
-          // --- 2. 中间分页选择区域 ---
+          // 中间分页选择区域
           Expanded(
             child: PageView.builder(
               itemCount: pageCount,
@@ -249,9 +248,9 @@ class _EventSelectPageState extends State<EventSelectPage> {
             ),
           ),
 
-          // --- 3. 分页指示器 ---
+          // 分页指示器
           Transform.translate(
-            offset: const Offset(0, -20), // 【修改点】 0 表示水平不动，-20 表示垂直向上移动 20 像素
+            offset: const Offset(0, -20), // 0 表示水平不动，-20 表示垂直向上移动 20 像素
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(pageCount, (index) {
@@ -271,7 +270,7 @@ class _EventSelectPageState extends State<EventSelectPage> {
             ),
           ),
 
-          // --- 4. 底部按钮 ---
+          // 底部按钮
           Padding(
             padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40, top: 20),
             child: SizedBox(

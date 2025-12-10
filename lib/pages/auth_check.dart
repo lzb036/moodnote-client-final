@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../main.dart'; // 引入主页 (MainPage)
-import 'welcome.dart'; // 引入刚才写的欢迎页 (WelcomePage)
+import '../main.dart';
+import 'welcome.dart';
 
 class AuthCheckPage extends StatefulWidget {
   const AuthCheckPage({super.key});
@@ -35,14 +35,14 @@ class _AuthCheckPageState extends State<AuthCheckPage> {
 
     // 根据布尔值决定去哪里
     if (isUserLoggedIn) {
-      // 1. 如果是真：跳转到主页 (MainPage)
+      // 如果是真：跳转到主页 (MainPage)
       // 使用 pushReplacement 删除当前页，防止用户按返回键回到这个空白页
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MainPage()),
       );
     } else {
-      // 2. 如果是假：跳转到欢迎页 (WelcomePage)
+      // 如果是假：跳转到欢迎页 (WelcomePage)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const WelcomePage()),

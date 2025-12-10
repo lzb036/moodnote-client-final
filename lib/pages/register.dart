@@ -10,22 +10,22 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // --- 1. 动画相关变量 ---
+  // 动画相关变量
   int _currentImageIndex = 0;
   Timer? _animTimer;
 
-  // --- 2. 验证码倒计时变量 ---
+  // 验证码倒计时变量
   Timer? _codeTimer;
   int _countdownTime = 0;
 
-  // --- 3. 表单控制器 ---
+  // 表单控制器
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _codeController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPwdController = TextEditingController();
 
-  // --- 4. 密码可见性开关 ---
+  // 密码可见性开关
   bool _isPwdVisible = false;
   bool _isConfirmPwdVisible = false;
 
@@ -82,7 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 【关键点1】设置状态栏图标为深色（因为背景是白色），确保能看清时间
+    // 设置状态栏图标为深色（因为背景是白色），确保能看清时间
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       statusBarIconBrightness: Brightness.dark,
@@ -96,7 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        // 【关键点2】使用 SafeArea 包裹主要内容
+        // 使用 SafeArea 包裹主要内容
         // 它可以自动识别刘海屏、动态岛、底部Home条，增加必要的 Padding
         child: SafeArea(
           child: SingleChildScrollView(
@@ -107,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- 1. 顶部返回按钮 ---
+                  // 顶部返回按钮
                   IconButton(
                     icon: const Icon(Icons.arrow_back_ios, color: Colors.black54),
                     onPressed: () => Navigator.pop(context),
@@ -117,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const SizedBox(height: 10),
 
-                  // --- 2. 左上角动态插画 ---
+                  // 左上角动态插画
                   Transform.translate(
                     offset: const Offset(-20, 0),
                     child: SizedBox(
@@ -135,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const SizedBox(height: 10),
 
-                  // --- 3. 大标题 ---
+                  // 大标题
                   const Text(
                     '创建账号',
                     style: TextStyle(
@@ -155,7 +155,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const SizedBox(height: 30),
 
-                  // --- 4. 表单区域 ---
+                  // 表单区域
 
                   // 用户名
                   _buildTextField(
@@ -234,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                   const SizedBox(height: 15),
 
-                  // --- 5. 注册按钮 ---
+                  // 注册按钮
                   SizedBox(
                     width: double.infinity,
                     height: 55,

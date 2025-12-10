@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 
-// --- 1. 日历数据模型 ---
+// 日历数据模型
 class CalendarDay {
   final DateTime date;
   final String dayStr;
   final String lunar; // 农历或节日名称
   final bool isCurrentMonth;
-  final bool isFestival; // 新增字段：是否是节日（用于特殊颜色显示）
+  final bool isFestival; // 是否是节日（用于特殊颜色显示）
 
   CalendarDay({
     required this.date,
     required this.dayStr,
     required this.lunar,
     this.isCurrentMonth = true,
-    this.isFestival = false, // 默认为 false
+    this.isFestival = false,
   });
 }
 
@@ -122,9 +122,9 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
     return days;
   }
 
-  // --- 核心修改：增加简单的公历节日判断 ---
+  // 增加简单的公历节日判断
   String _getFestivalOrLunar(int month, int day) {
-    // 1. 先判断公历节日 (仅列举常见节日，可自行补充)
+    // 先判断公历节日 (仅列举常见节日，可自行补充)
     if (month == 1 && day == 1) return "元旦";
     if (month == 2 && day == 14) return "情人节";
     if (month == 3 && day == 8) return "妇女节";
@@ -141,7 +141,7 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
     if (month == 12 && day == 24) return "平安夜";
     if (month == 12 && day == 25) return "圣诞节";
 
-    // 2. 如果不是节日，显示模拟的农历数字
+    // 如果不是节日，显示模拟的农历数字
     const chineseNumerals = ["初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十", "三一"];
     if (day <= chineseNumerals.length) return chineseNumerals[day - 1];
 
@@ -163,7 +163,7 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
               height: screenHeight * 0.7,
               child: Column(
                 children: [
-                  // 1. 顶部导航栏
+                  // 顶部导航栏
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
                     child: Row(
@@ -201,7 +201,7 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                     ),
                   ),
 
-                  // 2. 星期表头
+                  // 星期表头
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 10),
                     child: Row(
@@ -225,7 +225,7 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                     ),
                   ),
 
-                  // 3. 日历网格 PageView
+                  // 日历网格
                   Expanded(
                     child: PageView.builder(
                       controller: _pageController,
@@ -292,7 +292,7 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                                       ),
                                       const SizedBox(height: 2),
 
-                                      // --- 修改点：节日显示逻辑 ---
+                                      // 节日显示逻辑
                                       Text(
                                         isToday ? "今天" : item.lunar, // 优先显示“今天”
                                         style: TextStyle(
