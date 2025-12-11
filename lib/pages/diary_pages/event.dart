@@ -122,7 +122,7 @@ class _EventSelectPageState extends State<EventSelectPage> {
         children: [
           // 顶部展示区域 (左文案 + 右插画)
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             height: 160,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

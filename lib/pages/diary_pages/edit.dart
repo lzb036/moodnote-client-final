@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:record/record.dart'; // 录音
+import 'package:path_provider/path_provider.dart'; // 路径
+import 'package:permission_handler/permission_handler.dart'; // 权限
+import '../../http/service.dart';
+import '../../http/utils.dart';
 
 class DiaryEditPage extends StatefulWidget {
   const DiaryEditPage({super.key});
@@ -9,42 +14,41 @@ class DiaryEditPage extends StatefulWidget {
 }
 
 class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserver {
+  // --- 基础控制器 ---
   final TextEditingController _titleController = TextEditingController();
   final QuillController _quillController = QuillController.basic();
   final FocusNode _editorFocusNode = FocusNode();
-
-  // 页面整体滚动控制器
   final ScrollController _pageScrollController = ScrollController();
-  // 用于定位编辑器位置的Key
   final GlobalKey _editorAreaKey = GlobalKey();
 
+  // --- 状态变量 ---
   int _charCount = 0;
   bool _hasTitle = false;
-
-  // -1: 无, 0: 富文本工具, 1: 语音工具
-  int _selectedToolIndex = -1;
-
-  // 记录键盘状态
+  int _selectedToolIndex = -1; // -1: 无, 0: 富文本工具, 1: 语音工具
   bool _isKeyboardVisible = false;
-
-  //标记用户第一次唤醒富文本编辑器
   bool _isDefaultStyleApplied = false;
+
+  // --- 语音识别相关变量 ---
+  late final AudioRecorder _audioRecorder;
+  bool _isRecording = false; // 是否正在录音
+  bool _isRecognizing = false; // 是否正在识别中
+  String _voiceTip = "按住说话"; // 提示文字
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
+    _audioRecorder = AudioRecorder();
+
     _titleController.addListener(_checkInput);
-    // QuillController 的监听器会在文字变化 或 光标移动 时触发
     _quillController.addListener(_checkInput);
     _editorFocusNode.addListener(_handleEditorFocusChange);
-
-
   }
 
   @override
   void dispose() {
+    _audioRecorder.dispose();
     WidgetsBinding.instance.removeObserver(this);
     _titleController.dispose();
     _quillController.dispose();
@@ -54,7 +58,6 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     super.dispose();
   }
 
-  // 监听键盘高度变化
   @override
   void didChangeMetrics() {
     super.didChangeMetrics();
@@ -64,19 +67,137 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     if (newValue != _isKeyboardVisible) {
       setState(() {
         _isKeyboardVisible = newValue;
-
-        // 如果键盘弹起了，强制收起我们的自定义工具栏
+        // 键盘弹起时，收起自定义工具栏
         if (_isKeyboardVisible) {
           _selectedToolIndex = -1;
         }
       });
 
-      if (_isKeyboardVisible) {
-        if (_editorFocusNode.hasFocus) {
-          _scrollToEditor();
-        }
+      if (_isKeyboardVisible && _editorFocusNode.hasFocus) {
+        _scrollToEditor();
       }
     }
+  }
+
+  // 语音识别核心逻辑
+  Future<void> _startRecording() async {
+    try {
+      if (!await _audioRecorder.hasPermission()) {
+        await Permission.microphone.request();
+        if (!await _audioRecorder.hasPermission()) {
+          _showSnack("请授予麦克风权限");
+          return;
+        }
+      }
+
+      final dir = await getTemporaryDirectory();
+      final path = '${dir.path}/speech_input.wav';
+
+      const config = RecordConfig(
+        encoder: AudioEncoder.wav,
+        sampleRate: 16000,
+        numChannels: 1,
+      );
+
+      await _audioRecorder.start(config, path: path);
+
+      setState(() {
+        _isRecording = true;
+        _voiceTip = "松开 结束";
+      });
+    } catch (e) {
+      debugPrint("录音启动失败: $e");
+      _showSnack("录音启动失败");
+    }
+  }
+
+  Future<void> _stopAndRecognize() async {
+    if (!_isRecording) return;
+
+    try {
+      final path = await _audioRecorder.stop();
+      setState(() {
+        _isRecording = false;
+        _voiceTip = "正在识别...";
+        _isRecognizing = true;
+      });
+
+      if (path != null) {
+        await _uploadAndInsertText(path);
+      }
+    } catch (e) {
+      debugPrint("停止录音失败: $e");
+      setState(() {
+        _isRecognizing = false;
+        _voiceTip = "按住说话";
+      });
+    }
+  }
+
+  Future<void> _uploadAndInsertText(String filePath) async {
+    try {
+      // 直接调用一句话即可！
+      String text = await ApiService.recognizeSpeech(filePath);
+
+      if (text.isNotEmpty) {
+        _insertTextToEditor(text);
+        setState(() => _voiceTip = "识别成功");
+      }
+    } catch (e) {
+      // 使用工具类获取友好的错误提示
+      String msg = DataUtils.getErrorMsg(e);
+      _showSnack("失败: $msg");
+      setState(() => _voiceTip = "按住说话");
+      debugPrint("错误详情: $e");
+    } finally {
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted && !_isRecording) {
+          setState(() {
+            _isRecognizing = false;
+            _voiceTip = "按住说话";
+          });
+        }
+      });
+    }
+  }
+
+  // 插入文字后，强制夺回光标焦点
+  void _insertTextToEditor(String text) {
+    if (text.isEmpty) return;
+
+    // 获取插入位置：优先用光标位置，如果光标丢失(-1)则追加到末尾
+    int index = _quillController.document.length - 1;
+    if (_quillController.selection.baseOffset >= 0) {
+      index = _quillController.selection.baseOffset;
+    }
+
+    // 插入文字
+    _quillController.document.insert(index, text);
+
+    // 移动光标到文字后面
+    _quillController.updateSelection(
+      TextSelection.collapsed(offset: index + text.length),
+      ChangeSource.local,
+    );
+
+    // 强制让编辑器重新获得焦点，键盘会重新弹起，光标出现
+    if (!_editorFocusNode.hasFocus) {
+      _editorFocusNode.requestFocus();
+      // 如果你想保持键盘不弹起只显示光标，Flutter 做不到，
+      // 因为获得焦点必然伴随键盘弹起。
+      // 所以这里的逻辑是：说完话 -> 自动切回键盘模式 -> 用户可以继续打字
+    }
+  }
+
+  // 辅助逻辑
+  void _showSnack(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      duration: const Duration(seconds: 1),
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: const Color(0xFF1A2226),
+    ));
   }
 
   void _scrollToEditor() {
@@ -95,14 +216,12 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
   }
 
   void _handleEditorFocusChange() {
-    // 如果编辑器获得了焦点（意味着键盘要弹起），收起自定义工具栏
+    // 获得焦点时（如键盘弹起），收起语音面板
     if (_editorFocusNode.hasFocus && _selectedToolIndex != -1) {
       setState(() {
         _selectedToolIndex = -1;
       });
     }
-
-    // 在用户第一次点击编辑器时，才设置默认格式
     if (_editorFocusNode.hasFocus && !_isDefaultStyleApplied) {
       _isDefaultStyleApplied = true;
       _quillController.formatSelection(Attribute.fromKeyValue('font', '黑体'));
@@ -112,19 +231,16 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
 
   void _checkInput() {
     if (!mounted) return;
-
     setState(() {
       var textLength = _quillController.document.toPlainText().length;
       _charCount = textLength > 1 ? textLength - 1 : 0;
       _hasTitle = _titleController.text.trim().isNotEmpty;
     });
 
-    // 光标跟随逻辑
     if (_isKeyboardVisible && _editorFocusNode.hasFocus) {
       final selection = _quillController.selection;
       final docLength = _quillController.document.length;
       bool isAtBottom = selection.baseOffset >= docLength - 10;
-
       if (isAtBottom) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_pageScrollController.hasClients) {
@@ -150,14 +266,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
 
   void _handleSavePress() {
     if (!_hasTitle) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("请输入标题"),
-          duration: Duration(seconds: 1),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Color(0xFF1A2226),
-        ),
-      );
+      _showSnack("请输入标题");
       return;
     }
     Navigator.of(context).popUntil((route) => route.isFirst);
@@ -201,6 +310,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     );
   }
 
+  // UI
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -212,9 +322,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: _buildAppBar(),
-        resizeToAvoidBottomInset: true, // 允许Body随底部高度调整
-
-        // 移除 Stack，Body 只是一个 ScrollView
+        resizeToAvoidBottomInset: false,
         body: CustomScrollView(
           controller: _pageScrollController,
           physics: const AlwaysScrollableScrollPhysics(),
@@ -234,12 +342,10 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
                 ),
               ),
             ),
-
             SliverFillRemaining(
               hasScrollBody: false,
               child: GestureDetector(
                 onTap: () {
-                  // 点击内容区域空白处：收起键盘，也收起工具栏
                   FocusScope.of(context).unfocus();
                   if (_selectedToolIndex != -1) {
                     setState(() {
@@ -255,7 +361,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
                     controller: _quillController,
                     focusNode: _editorFocusNode,
                     config: QuillEditorConfig(
-                      scrollable: false, // 禁用编辑器内部滚动，交由外层CustomScrollView处理
+                      scrollable: false,
                       expands: false,
                       autoFocus: false,
                       placeholder: r'来自日渐话痨的心情记：\n\n我很喜欢认真记录的你，告诉我今天过得怎么样吧！\n\n你可以用图片/文字和语音记录今天。\n\n点击编辑菜单展开更多功能，支持背景/字体/排版修改。',
@@ -266,8 +372,6 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
             ),
           ],
         ),
-
-        // 所有底部交互移入 BottomNavigationBar
         bottomNavigationBar: _buildBottomBar(),
       ),
     );
@@ -337,16 +441,16 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     );
   }
 
-  // 重构底部栏
   Widget _buildBottomBar() {
-    // 获取当前系统的键盘高度
+    // 获取键盘高度
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
 
+    // 核心修改：如果面板被选中（_selectedToolIndex != -1），则不再添加键盘高度的 Padding。
+    // 这样避免了 "键盘高度 + 面板高度" 同时存在导致溢出。
+    final double bottomPadding = _selectedToolIndex != -1 ? 0 : keyboardHeight;
+
     return Container(
-      // 给底部添加 padding，其高度等于键盘高度。
-      // 这样当系统键盘弹起时，我们的工具栏图标会被顶在键盘上方。
-      // 当自定义面板开启时，keyboardHeight 为 0，padding 为 0。
-      padding: EdgeInsets.only(bottom: keyboardHeight),
+      padding: EdgeInsets.only(bottom: bottomPadding),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -357,9 +461,9 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // 包裹内容高度
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // 字数统计与工具栏图标 (始终显示)
+          // 字数统计与工具栏
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -372,9 +476,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
                       color: const Color(0xFFF0F0F0),
                       borderRadius: BorderRadius.circular(12)),
                   child: Text("共 $_charCount 字",
-                      style: const TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey)),
+                      style: const TextStyle(fontSize: 10, color: Colors.grey)),
                 ),
               ),
               Padding(
@@ -390,16 +492,15 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
             ],
           ),
 
-          // 扩展功能面板 (动画显示)
-          // 当 _selectedToolIndex 有值时，高度设为 200，Scaffold 会感知到这个高度变化
-          // 并自动将 Body 向上推 200，实现“顶起”效果。
+          // 扩展面板
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
+            // 当选中工具时显示高度，否则为0
             height: _selectedToolIndex != -1 ? 200 : 0,
             child: _selectedToolIndex != -1
                 ? _buildPanelContent()
-                : const SizedBox(), // 不显示时放个空盒子
+                : const SizedBox(),
           ),
         ],
       ),
@@ -415,11 +516,11 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
         border: Border(
           top: BorderSide(color: Color(0xFFEEEEEE), width: 1),
         ),
+        color: Colors.white,
       ),
       child: _selectedToolIndex == 0
           ? Column(
         children: [
-          // flutter_quill 的工具栏
           QuillSimpleToolbar(
             controller: _quillController,
             config: const QuillSimpleToolbarConfig(
@@ -437,21 +538,16 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
               showClipboardCopy: false,
               showClipboardPaste: true,
               toolbarSectionSpacing: 0,
-              //自定义字体
               buttonOptions: QuillSimpleToolbarButtonOptions(
-                //字体配置
                 fontFamily: QuillToolbarFontFamilyButtonOptions(
                   items: {
-                    // '显示在菜单的名字': 'pubspec.yaml中配置的family名字'
-                    '黑体':'黑体',
+                    '黑体': '黑体',
                     '宋体': '宋体',
                     '楷体': '楷体',
                     '手写体': '手写体'
                   },
                 ),
-                // 字号配置
                 fontSize: QuillToolbarFontSizeButtonOptions(
-                  // 自定义列表：只写你想显示的选项，不写'Clear'它就消失了
                   items: {
                     '小字号': 'small',
                     '大字号': 'large',
@@ -464,13 +560,65 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
         ],
       )
           : Center(
-        // 语音录制面板占位 (Index 1)
+        // 语音录制面板
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            Icon(Icons.mic, size: 48, color: Color(0xFF2DC3C8)),
-            SizedBox(height: 10),
-            Text("按住说话", style: TextStyle(color: Colors.grey)),
+          children: [
+            Text(
+              _voiceTip,
+              style: TextStyle(
+                color: _isRecording ? Colors.redAccent : Colors.grey,
+                fontSize: 16,
+                fontWeight:
+                _isRecording ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onLongPressStart: (_) => _startRecording(),
+              onLongPressEnd: (_) => _stopAndRecognize(),
+              onLongPressCancel: () => _stopAndRecognize(),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: _isRecording ? 100 : 80,
+                height: _isRecording ? 100 : 80,
+                decoration: BoxDecoration(
+                  color: _isRecording
+                      ? Colors.redAccent.withOpacity(0.1)
+                      : const Color(0xFFF5F5F5),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                      color: _isRecording
+                          ? Colors.redAccent
+                          : Colors.transparent,
+                      width: 2),
+                  boxShadow: _isRecording
+                      ? [
+                    BoxShadow(
+                      color: Colors.redAccent.withOpacity(0.3),
+                      blurRadius: 20,
+                      spreadRadius: 5,
+                    )
+                  ]
+                      : [],
+                ),
+                child: _isRecognizing
+                    ? const Padding(
+                  padding: EdgeInsets.all(20.0),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Color(0xFF2DC3C8),
+                  ),
+                )
+                    : Icon(
+                  Icons.mic,
+                  size: _isRecording ? 40 : 32,
+                  color: _isRecording
+                      ? Colors.redAccent
+                      : const Color(0xFF2DC3C8),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -480,15 +628,16 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
   Widget _buildToolIcon(IconData icon, int index) {
     final bool isSelected = _selectedToolIndex == index;
     return IconButton(
-      icon: Icon(icon, color: isSelected ? const Color(0xFF2DC3C8) : Colors.grey, size: 26),
+      icon: Icon(icon,
+          color: isSelected ? const Color(0xFF2DC3C8) : Colors.grey, size: 26),
       onPressed: () {
         setState(() {
           if (_selectedToolIndex == index) {
-            // 如果点击的是当前已选中的图标，则关闭面板
             _selectedToolIndex = -1;
           } else {
-            // 选中新的图标，并强制收起系统键盘
             _selectedToolIndex = index;
+            // 点击工具栏时，收起键盘，导致失去焦点是正常的
+            // 我们在语音识别完成后会自动 requestFocus 拿回焦点
             FocusScope.of(context).unfocus();
           }
         });
