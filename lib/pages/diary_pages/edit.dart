@@ -27,6 +27,9 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
   // 记录键盘状态
   bool _isKeyboardVisible = false;
 
+  //标记用户第一次唤醒富文本编辑器
+  bool _isDefaultStyleApplied = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,11 +40,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     _quillController.addListener(_checkInput);
     _editorFocusNode.addListener(_handleEditorFocusChange);
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // 设置默认格式
-      _quillController.formatSelection(Attribute.fromKeyValue('font', '黑体'));
-      _quillController.formatSelection(Attribute.fromKeyValue('size', 'large'));
-    });
+
   }
 
   @override
@@ -96,11 +95,18 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
   }
 
   void _handleEditorFocusChange() {
-    // 如果编辑器获得了焦点（意味着键盘要弹起），收起工具栏
+    // 如果编辑器获得了焦点（意味着键盘要弹起），收起自定义工具栏
     if (_editorFocusNode.hasFocus && _selectedToolIndex != -1) {
       setState(() {
         _selectedToolIndex = -1;
       });
+    }
+
+    // 在用户第一次点击编辑器时，才设置默认格式
+    if (_editorFocusNode.hasFocus && !_isDefaultStyleApplied) {
+      _isDefaultStyleApplied = true;
+      _quillController.formatSelection(Attribute.fromKeyValue('font', '黑体'));
+      _quillController.formatSelection(Attribute.fromKeyValue('size', 'large'));
     }
   }
 
@@ -280,9 +286,9 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
         crossAxisAlignment: CrossAxisAlignment.baseline,
         textBaseline: TextBaseline.alphabetic,
         children: [
-          Text("09", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, fontFamily: 'Courier', color: Colors.black87)),
+          Text("09", style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, fontFamily: '楷体', color: Colors.black87)),
           SizedBox(width: 6),
-          Text("2025年12月", style: TextStyle(fontSize: 13, color: Colors.grey, fontFamily: 'Courier')),
+          Text("2025年12月", style: TextStyle(fontSize: 13, color: Colors.grey, fontFamily: '楷体')),
         ],
       ),
       centerTitle: true,
@@ -321,10 +327,10 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
   Widget _buildTitleField() {
     return TextField(
       controller: _titleController,
-      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87, fontFamily: 'Courier'),
+      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
       decoration: const InputDecoration(
         hintText: "给这篇日记起个标题吧...",
-        hintStyle: TextStyle(color: Color(0xFFCCCCCC), fontWeight: FontWeight.bold, fontFamily: 'Courier'),
+        hintStyle: TextStyle(color: Color(0xFFCCCCCC), fontWeight: FontWeight.bold),
         border: InputBorder.none,
         contentPadding: EdgeInsets.zero,
       ),
@@ -368,8 +374,7 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
                   child: Text("共 $_charCount 字",
                       style: const TextStyle(
                           fontSize: 10,
-                          color: Colors.grey,
-                          fontFamily: 'Courier')),
+                          color: Colors.grey)),
                 ),
               ),
               Padding(
@@ -432,6 +437,28 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
               showClipboardCopy: false,
               showClipboardPaste: true,
               toolbarSectionSpacing: 0,
+              //自定义字体
+              buttonOptions: QuillSimpleToolbarButtonOptions(
+                //字体配置
+                fontFamily: QuillToolbarFontFamilyButtonOptions(
+                  items: {
+                    // '显示在菜单的名字': 'pubspec.yaml中配置的family名字'
+                    '黑体':'黑体',
+                    '宋体': '宋体',
+                    '楷体': '楷体',
+                    '手写体': '手写体'
+                  },
+                ),
+                // 字号配置
+                fontSize: QuillToolbarFontSizeButtonOptions(
+                  // 自定义列表：只写你想显示的选项，不写'Clear'它就消失了
+                  items: {
+                    '小字号': 'small',
+                    '大字号': 'large',
+                    '超大号': 'huge',
+                  },
+                ),
+              ),
             ),
           ),
         ],

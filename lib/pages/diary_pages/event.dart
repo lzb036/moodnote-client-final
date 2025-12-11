@@ -138,8 +138,7 @@ class _EventSelectPageState extends State<EventSelectPage> {
                         "是什么事情呀",
                         style: TextStyle(
                           fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Courier',
+                          fontWeight: FontWeight.bold
                         ),
                       ),
                       SizedBox(height: 12),
@@ -147,8 +146,7 @@ class _EventSelectPageState extends State<EventSelectPage> {
                         "让我也听听呐",
                         style: TextStyle(
                             fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Courier'
+                            fontWeight: FontWeight.bold
                         ),
                       ),
                     ],
@@ -234,8 +232,7 @@ class _EventSelectPageState extends State<EventSelectPage> {
                               style: TextStyle(
                                 color: isSelected ? Colors.white : Colors.black87,
                                 fontSize: 13,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Courier',
+                                fontWeight: FontWeight.bold
                               ),
                             ),
                           ],

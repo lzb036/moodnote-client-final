@@ -180,7 +180,7 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                             children: [
                               Text(
                                 "${_focusedDay.year}年 ${_focusedDay.month}月",
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Courier', letterSpacing: 1.0),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.0),
                               ),
                               const SizedBox(width: 5),
                               const Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 28),
@@ -216,7 +216,6 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: isWeekend ? accentColor : Colors.black54,
-                                fontFamily: 'Courier',
                               ),
                             ),
                           ),
@@ -286,7 +285,6 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          fontFamily: 'Courier',
                                           color: isSelected ? Colors.white : const Color(0xFF1A2226),
                                         ),
                                       ),
@@ -297,7 +295,6 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                                         isToday ? "今天" : item.lunar, // 优先显示“今天”
                                         style: TextStyle(
                                           fontSize: 10,
-                                          fontFamily: 'Courier',
                                           // 颜色逻辑：
                                           // 1. 选中状态 -> 白色
                                           // 2. 没选中但今天是 -> 青色
@@ -338,7 +335,7 @@ class _DiaryCalendarPageState extends State<DiaryCalendarPage> {
                     padding: EdgeInsets.only(bottom: 25.0),
                     child: Text(
                       "选中日期后点击右上角+，从所选日子开始写",
-                      style: TextStyle(fontSize: 12, color: Colors.grey, fontFamily: 'Courier', letterSpacing: 1.0),
+                      style: TextStyle(fontSize: 12, color: Colors.grey, letterSpacing: 1.0),
                     ),
                   ),
                 ],

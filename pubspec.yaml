@@ -19,6 +19,9 @@ dependencies:
   flutter_native_splash: ^2.4.0
   flutter_launcher_icons: ^0.13.1
   flutter_quill: ^11.5.0
+  speech_to_text: ^6.6.0
+  permission_handler: ^11.0.0
+
 
 dev_dependencies:
   flutter_test:

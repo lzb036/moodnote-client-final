@@ -154,7 +154,6 @@ class _DiaryPageState extends State<DiaryPage> {
                                 fontSize: 24,
                                 color: Colors.grey,
                                 letterSpacing: 1.2,
-                                fontFamily: 'Courier',
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

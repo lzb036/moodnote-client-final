@@ -147,7 +147,7 @@ class _WeatherPageState extends State<WeatherPage> {
         children: [
           // 顶部展示区域
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             height: 200,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,8 +190,7 @@ class _WeatherPageState extends State<WeatherPage> {
                           "晚上好 匿名兔322",
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Courier',
+                            fontWeight: FontWeight.bold
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -216,8 +215,6 @@ class _WeatherPageState extends State<WeatherPage> {
               ],
             ),
           ),
-
-          const SizedBox(height: 10),
 
           // 中间分页区域 (PageView)
           Expanded(
@@ -244,7 +241,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   padding: const EdgeInsets.only(
                       left: 10,
                       right: 10,
-                      top: 35, // 这里增加了顶部内边距，图标会整体下移
+                      top: 5,
                       bottom: 10 // 如果底部也觉得紧，可以加一点
                   ),
                   itemCount: pageItems.length,

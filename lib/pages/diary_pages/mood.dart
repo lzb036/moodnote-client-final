@@ -182,8 +182,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
                         "那么 匿名兔322",
                         style: TextStyle(
                           fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Courier',
+                          fontWeight: FontWeight.bold
                         ),
                       ),
                       SizedBox(height: 12),
@@ -271,8 +270,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
                             color: isSelected ? Colors.white : const Color(0xFF1A2226),
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
-                            letterSpacing: 1.0,
-                            fontFamily: 'Courier',
+                            letterSpacing: 1.0
                           ),
                         ),
                       ),
