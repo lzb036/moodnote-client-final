@@ -9,7 +9,6 @@ import 'pages/chart.dart';
 import 'pages/mine.dart';
 
 //引入其他界面
-import 'pages/auth_check.dart';
 import 'pages/welcome.dart';
 import 'pages/login.dart';
 import 'pages/register.dart';
@@ -77,7 +76,7 @@ class MoodNoteApp extends StatelessWidget {
 
       // 强制 APP 始终使用中文，不管手机系统语言是什么
       locale: const Locale('zh', 'CN'),
-      home: const AuthCheckPage(), //一进入应用时的界面
+      home: const WelcomePage(), //一进入应用时的界面
       routes: {
         '/welcome': (context) => const WelcomePage(),
         '/login': (context) => const LoginPage(),

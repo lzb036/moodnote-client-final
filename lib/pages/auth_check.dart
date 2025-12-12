@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
 import 'welcome.dart';
+import '../http/service.dart';
 
 class AuthCheckPage extends StatefulWidget {
   const AuthCheckPage({super.key});
@@ -11,38 +12,28 @@ class AuthCheckPage extends StatefulWidget {
 
 class _AuthCheckPageState extends State<AuthCheckPage> {
 
-  // ============================================
-  // 【测试开关】修改这里来测试不同流程
-  // true  -> 直接进主页 (MainPage)
-  // false -> 进欢迎页 (WelcomePage)
-  // ============================================
-  final bool isUserLoggedIn = true;
-
   @override
   void initState() {
     super.initState();
-    // 执行检查逻辑
     _checkAuthStatus();
   }
 
-  // 模拟一个检查过程
+  // 执行真正的 Token 检查逻辑
   void _checkAuthStatus() async {
-    // 这里加一个微小的延迟（比如 0 毫秒或几百毫秒）
-    // 作用：防止页面还没渲染完就跳转导致报错，同时也预留了读取本地存储的时间
-    await Future.delayed(const Duration(milliseconds: 100));
+    // 1. 调用 Service 方法，尝试用 Refresh Token 换取新门票
+    // 这个过程是异步的，可能会花几百毫秒网络请求时间
+    bool isValid = await ApiService.tryRefreshToken();
 
-    if (!mounted) return; // 确保页面还在
+    if (!mounted) return;
 
-    // 根据布尔值决定去哪里
-    if (isUserLoggedIn) {
-      // 如果是真：跳转到主页 (MainPage)
-      // 使用 pushReplacement 删除当前页，防止用户按返回键回到这个空白页
+    if (isValid) {
+      // 2. 有效 -> 进主页 (MainPage)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MainPage()),
       );
     } else {
-      // 如果是假：跳转到欢迎页 (WelcomePage)
+      // 3. 无效 -> 进欢迎页 (WelcomePage)
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const WelcomePage()),
@@ -52,12 +43,12 @@ class _AuthCheckPageState extends State<AuthCheckPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 在检查期间，显示一个白屏，或者一个加载圈
-    // 这里我们保持白屏，用户体感就是一点开APP直接到了目标页面
+    // 检查期间显示白屏，或者你可以放一个 Logo
     return const Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        // 如果你需要，可以在这里放一个 CircularProgressIndicator()
+        // 可选：加个小菊花，告诉用户正在连接服务器
+        // child: CircularProgressIndicator(color: Color(0xFF1A2226)),
       ),
     );
   }
