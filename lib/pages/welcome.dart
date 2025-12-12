@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../http/service.dart'; // 引入 ApiService
 import '../main.dart'; // 引入主页
+import '../widgets/toast.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -39,23 +40,53 @@ class _WelcomePageState extends State<WelcomePage> {
 
   // --- 核心：Token 检查逻辑 ---
   Future<void> _checkAuth() async {
-    // 调用之前写好的静态方法
-    // 这个过程可能需要几百毫秒 (读取本地 -> 发请求 -> 等响应)
-    bool isValid = await ApiService.tryRefreshToken();
+    // 调用 Service 获取状态
+    //AuthStatus status = await ApiService.tryRefreshToken();
+
+    //先强制验证正确方便进入进行前端开发
+    await Future.delayed(const Duration(milliseconds: 100));
+    AuthStatus status =AuthStatus.valid;
 
     if (!mounted) return;
 
-    if (isValid) {
-      // Token 有效 -> 直接跳转主页 (替换掉当前页)
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
-      );
-    } else {
-      // Token 无效 -> 留在欢迎页，显示内容
-      setState(() {
-        _showContent = true;
-      });
+    switch (status) {
+      case AuthStatus.valid:
+      //有效 -> 直接进主页
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainPage()),
+        );
+        break;
+
+      case AuthStatus.invalid:
+      // 无效 -> 显示欢迎页 + 红色弹窗
+        setState(() {
+          _showContent = true;
+        });
+        // 延时弹窗，等页面渲染好
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            ToastUtils.showTopMessage(context, "身份认证已过期", isError: true);
+          }
+        });
+        break;
+
+      case AuthStatus.none:
+      // 不存在 -> 仅仅显示欢迎页 (不弹窗)
+        setState(() {
+          _showContent = true;
+        });
+        break;
+
+      case AuthStatus.networkError:
+      // 网络错误 -> 红色弹窗 "网络连接超时"
+        setState(() => _showContent = true);
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            ToastUtils.showTopMessage(context, "网络连接超时", isError: true);
+          }
+        });
+        break;
     }
   }
 
@@ -67,12 +98,6 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // 如果正在检查 Token，且还没有结果，可以显示一个空白或加载圈
-    // 这里的策略是：先不显示按钮，等检查失败了再把按钮显示出来
-    // 这样用户就不会在还没检查完的时候误触“登录”
-
-    // 或者简单点：始终显示背景图，只控制按钮的可交互性。
-    // 这里我们用 _showContent 控制整个 Scaffold 的 body
     if (!_showContent) {
       // 检查期间：显示一个纯白背景 + 加载圈 (或者只显示背景图不显示按钮)
       return const Scaffold(

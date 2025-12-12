@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // 用于状态栏控制
 import 'package:intl/intl.dart'; // 用于日期格式化
 import 'diary_pages/weather.dart';
+import '../draft_manager.dart';
 
 class DiaryPage extends StatefulWidget {
   const DiaryPage({super.key});
@@ -32,10 +33,15 @@ class _DiaryPageState extends State<DiaryPage> {
 
   // 跳转到写日记页面的通用方法
   void _goToWeather() {
+    // 在开始新流程前，强制清空之前可能残留的数据
+    DiaryDraftManager().clear();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const WeatherPage()),
-    );
+    ).then((_) {
+      //返回这个界面时清除暂存区数据
+      DiaryDraftManager().clear();
+    });
   }
 
   @override

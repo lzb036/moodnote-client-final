@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'edit.dart';
+import '../../draft_manager.dart';
 
 // 定义事件数据模型
 class EventItem {
@@ -22,7 +23,14 @@ class EventSelectPage extends StatefulWidget {
 class _EventSelectPageState extends State<EventSelectPage> {
   // 状态管理
   // 默认选中第0个
-  final Set<int> _selectedIndices = {0};
+  Set<int> _selectedIndices = {0};
+
+  @override
+  void initState() {
+    super.initState();
+    //读取临时数据
+    _selectedIndices = Set.from(DiaryDraftManager().eventIndices);
+  }
 
   // 当前页码
   int _currentPage = 0;
@@ -99,6 +107,8 @@ class _EventSelectPageState extends State<EventSelectPage> {
         // 选中
         _selectedIndices.add(index);
       }
+      //只要一选择就会进行临时存储
+      DiaryDraftManager().eventIndices = Set.from(_selectedIndices);
     });
   }
 
@@ -275,6 +285,8 @@ class _EventSelectPageState extends State<EventSelectPage> {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
+                  //存储临时数据（用来做最后的保险）
+                  DiaryDraftManager().eventIndices = Set.from(_selectedIndices);
                   // 跳转到编辑日记界面
                   Navigator.push(
                     context,

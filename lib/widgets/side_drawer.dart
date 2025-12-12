@@ -140,6 +140,15 @@ class SideDrawer extends StatelessWidget {
                         );
                       }
                   ),
+                  _buildMenuItem(
+                      context,
+                      icon: Icons.inbox_outlined, // 使用收件箱图标，很适合表示草稿箱
+                      title: "草稿箱",
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: 跳转到草稿箱页面
+                      }
+                  ),
                 ],
               ),
             ),

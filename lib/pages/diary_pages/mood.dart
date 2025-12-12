@@ -1,6 +1,7 @@
 import 'dart:async'; // 引入 Timer 用于轮播
 import 'package:flutter/material.dart';
 import 'event.dart';
+import '../../draft_manager.dart';
 
 // 定义心情数据模型
 class MoodItem {
@@ -24,7 +25,7 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
   // 状态管理
   // 使用 Set 存储选中的索引，支持多选，自动去重
   // 默认选中第0个 (钦佩)
-  final Set<int> _selectedIndices = {0};
+  Set<int> _selectedIndices = {0};
 
   // 当前页码
   int _currentPage = 0;
@@ -72,6 +73,8 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
   @override
   void initState() {
     super.initState();
+    //读取临时数据
+    _selectedIndices = Set.from(DiaryDraftManager().moodIndices);
     _checkCarousel();
   }
 
@@ -143,9 +146,10 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
         // 为了体验，点击新的时，立即展示这个新的图片
         _currentDisplayIndex = _selectedIndices.toList().indexOf(index);
       }
-
       // 重新检查是否需要轮播
       _checkCarousel();
+      //只要一选择就会进行临时存储
+      DiaryDraftManager().moodIndices = Set.from(_selectedIndices);
     });
   }
 
@@ -310,6 +314,8 @@ class _MoodSelectPageState extends State<MoodSelectPage> {
               child: ElevatedButton(
                 onPressed: () {
                   if (_selectedIndices.isNotEmpty) {
+                    //存储临时数据（用来做最后的保险）
+                  DiaryDraftManager().moodIndices = Set.from(_selectedIndices);
                     // 跳转到事件选择界面
                     Navigator.push(
                       context,

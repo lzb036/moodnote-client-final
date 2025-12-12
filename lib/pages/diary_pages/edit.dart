@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart'; // 路径
 import 'package:permission_handler/permission_handler.dart'; // 权限
 import '../../http/service.dart';
 import '../../http/utils.dart';
+import '../../widgets/toast.dart';
 
 class DiaryEditPage extends StatefulWidget {
   const DiaryEditPage({super.key});
@@ -33,6 +34,9 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
   bool _isRecording = false; // 是否正在录音
   bool _isRecognizing = false; // 是否正在识别中
   String _voiceTip = "按住说话"; // 提示文字
+
+  // 专门控制保存按钮的状态
+  bool _canSave = false;
 
   @override
   void initState() {
@@ -231,10 +235,14 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
 
   void _checkInput() {
     if (!mounted) return;
+    // 获取纯文本内容 (去掉格式)
+    String plainText = _quillController.document.toPlainText().trim();
+    String titleText = _titleController.text.trim();
     setState(() {
       var textLength = _quillController.document.toPlainText().length;
       _charCount = textLength > 1 ? textLength - 1 : 0;
-      _hasTitle = _titleController.text.trim().isNotEmpty;
+      // 判断是否可保存：标题不为空 且 正文不为空
+      _canSave = titleText.isNotEmpty && plainText.isNotEmpty;
     });
 
     if (_isKeyboardVisible && _editorFocusNode.hasFocus) {
@@ -255,29 +263,26 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
     }
   }
 
+  //左上角按钮返回（返回到主界面）
   void _handleBackPress() {
-    bool isContentEmpty = _quillController.document.toPlainText().trim().isEmpty;
-    if (_titleController.text.isEmpty && isContentEmpty) {
-      Navigator.pop(context);
-      return;
-    }
     _showExitDialog();
   }
 
   void _handleSavePress() {
-    if (!_hasTitle) {
-      _showSnack("请输入标题");
+    //保存按钮是否可用校验
+    String plainText = _quillController.document.toPlainText().trim();
+    String titleText = _titleController.text.trim();
+    if (plainText.isEmpty||titleText.isEmpty) {
+      _showSnack("请输入标题或内容");
       return;
     }
+    //显示顶部成功弹窗
+    ToastUtils.showTopMessage(context, "生成日记成功", isError: false);
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
+  //手势返回（返回到主界面）
   void _handleSystemBack() {
-    bool isContentEmpty = _quillController.document.toPlainText().trim().isEmpty;
-    if (_titleController.text.isEmpty && isContentEmpty) {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-      return;
-    }
     _showExitDialog();
   }
 
@@ -287,22 +292,22 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: const Text("保留记忆"),
-          content: const Text("是否保存当前的日记草稿？"),
+          title: const Text("草稿箱提示"),
+          content: const Text("是否保存日记为草稿？"),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx);
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
-              child: const Text("不保留", style: TextStyle(color: Colors.grey)),
+              child: const Text("拒绝", style: TextStyle(color: Colors.grey)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.pop(ctx);
                 Navigator.of(context).popUntil((route) => route.isFirst);
               },
-              child: const Text("保留", style: TextStyle(color: Color(0xFF2DC3C8))),
+              child: const Text("同意", style: TextStyle(color: Color(0xFF2DC3C8))),
             ),
           ],
         );
@@ -398,7 +403,11 @@ class _DiaryEditPageState extends State<DiaryEditPage> with WidgetsBindingObserv
       centerTitle: true,
       actions: [
         IconButton(
-          icon: Icon(Icons.check_circle_outline, color: _hasTitle ? const Color(0xFF2DC3C8) : Colors.black54, size: 28),
+          icon: Icon(
+              Icons.check_circle_outline,
+              color: _canSave ? const Color(0xFF2DC3C8) : Colors.black54,
+              size: 28
+          ),
           onPressed: _handleSavePress,
         ),
         const SizedBox(width: 10),

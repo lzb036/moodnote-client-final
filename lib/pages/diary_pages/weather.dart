@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'mood.dart';
+import '../../draft_manager.dart';
 
 // 定义天气数据模型
 class WeatherItem {
@@ -31,6 +32,13 @@ class _WeatherPageState extends State<WeatherPage> {
 
   // 当前滑动到了第几页（用于控制底部小圆点）
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    //进来时先读取临时数据
+    _selectedIndex = DiaryDraftManager().weatherIndex;
+  }
 
   // 配置 13 种天气数据
   final List<WeatherItem> _weatherItems = [
@@ -262,6 +270,8 @@ class _WeatherPageState extends State<WeatherPage> {
                         setState(() {
                           _selectedIndex = realIndex;
                         });
+                        //只要点击选择就会进行临时存储
+                        DiaryDraftManager().weatherIndex = realIndex;
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
@@ -331,6 +341,8 @@ class _WeatherPageState extends State<WeatherPage> {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
+                  //存储临时数据（用来做最后的保险）
+                  DiaryDraftManager().weatherIndex = _selectedIndex;
                   // 跳转到情绪选择界面
                   Navigator.push(
                     context,
